@@ -3,6 +3,12 @@ import { IoMdNotifications } from "react-icons/io";
 import { ImPacman } from "react-icons/im";
 
 const Navbar = () => {
+
+
+  const notif = ()=> {
+    window.alert("Soon");
+  }
+
   return (
      <nav className='relative bg-gradient-to-br from-[#2563EB] to-[#0EA5E9]   after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10'>
       <div className='mx-auto max-w-7xl px-2 sm:px-6 lg:px-8'>
@@ -23,7 +29,7 @@ const Navbar = () => {
               </div>
             </div>
               <div className='flesx items-center space-x-4'>
-                    <IoMdNotifications className='w-9  h-16 text-emerald-500'/>
+                    <IoMdNotifications className='w-9  h-16 text-emerald-500' onClick={notif}/>
               </div>
           </div>
       </div>

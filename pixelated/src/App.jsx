@@ -3,6 +3,7 @@ import Navbar from './component/Navbar'
 import Header from './component/Header'
 import Sections from './component/Section/Sections'
 import Heading from './component/Heading/Heading'
+import Information from './component/Informations/Information'
 
 const App = () => {
   return (
@@ -12,7 +13,7 @@ const App = () => {
       <Header />
       <Heading />
       <Sections />
-
+      <Information />
     </div>
 
   )
