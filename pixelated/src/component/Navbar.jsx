@@ -10,7 +10,7 @@ const Navbar = () => {
   }
 
   return (
-     <nav className='relative bg-gradient-to-br from-[#2563EB] to-[#0EA5E9]   after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10'>
+     <nav className='relative bg-gradient-to-br from-[#1c2b4e] to-[#0F172A]   after:pointer-events-none after:absolute after:inset-x-0 after:bottom-0 after:h-px after:bg-white/10'>
       <div className='mx-auto max-w-7xl px-2 sm:px-6 lg:px-8'>
    
           <div className='relative h-16 flex items-center justify-between'>
@@ -20,9 +20,9 @@ const Navbar = () => {
                   <div className='hidden sm:ml-6 sm:block'>
                         <div className='flex space-x-7'>
 
-                              <a href="#" className='font-bold text-l  px-2 duration-200 rounded-md '>test</a>
-                              <a href="#" className='font-medium text-l hover:bg-[#14B8A6] duration-200 rounded-md text-white'>test</a>
-                              <a href="#" className='font-medium text-l hover:bg-[#14B8A6] duration-200 rounded-md text-white'>test</a>
+                              <a href="#" className='font-bold text-l text-[#14B8A6] px-2 duration-200 rounded-md '>Home</a>
+                              <a href="#" className='font-medium text-l hover:bg-[#14B8A6] duration-200 rounded-md text-white px-3'>Section</a>
+                              <a href="#" className='font-medium text-l hover:bg-[#14B8A6] duration-200 rounded-md text-white px-3'>test</a>
                              
                         </div>
                     </div>

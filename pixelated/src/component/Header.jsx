@@ -20,7 +20,7 @@ const Header = () => {
 
       </div>
 
-      <p className='font-medium font-pixelify text-white mt-auto text-sm sm:text-base'>
+      <p className='font-medium font-pixelify  text-white mt-4 sm:mt-auto text-sm sm:text-base'>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Porro.
       </p>
     </div>
