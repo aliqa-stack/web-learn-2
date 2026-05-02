@@ -15,10 +15,11 @@ const Information = () => {
         </div>
 
         <div className='flex mt-4 px-5 flex-col gap-3 sm:ml-12'>
-            <p className='text-white font-pixelify font-light '>test</p>
-            <p className='text-white font-pixelify font-light '>test</p>
-            <p className='text-white font-pixelify font-light '>test</p>
-            <p className='text-white font-pixelify font-light '>test</p>
+            <p className='text-white font-pixelify font-light '>I Carry, We Win</p>
+            <p className='text-white font-pixelify font-light '>God Mode: ON</p>
+            <p className='text-white font-pixelify font-light '>This? Absolute Meta!</p>
+            <p className='text-white font-pixelify font-light '>
+Honkai-DMG Demo</p>
         </div>
 
         <div className='flex justify-center mt-6'>

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import {Link} from 'react-router-dom'
 
 const LoginSection = () => {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const Users = [];
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -18,8 +20,15 @@ const LoginSection = () => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!email.trim() || !password.trim()) {
+            alert('Please fill in all fields');
+            return;
+        }
         console.log('Email:', email);
         console.log('Password:', password);
+        Users.push(email, password)
+        console.log(Users);
     }
 
   return (
@@ -54,7 +63,7 @@ const LoginSection = () => {
                       </div>
                       <a href="#" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
                   </div>
-                  <button type="submit" class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Sign in</button>
+                  <button type="submit"  class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"><Link to="/">sign in</Link></button>
                   <p class="text-sm font-light text-gray-500 dark:text-gray-400">
                       Don’t have an account yet? <a href="#" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
                   </p>
