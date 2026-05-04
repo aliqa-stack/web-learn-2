@@ -5,6 +5,9 @@ import (
 	"net/http"
 )
 
+// Authorize checks if the request has valid session and CSRF tokens
+
+
 var AuthError = errors.New("Unauthorized")
 
 func Authorize(r *http.Request) Error {

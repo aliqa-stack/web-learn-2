@@ -77,7 +77,7 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
+    // Generate session and CSRF tokens
 	sessionToken, err := generateToken(32)
 	if err != nil {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
