@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"fmt"
+	"time"
 )
 
 type Login struct {
@@ -15,7 +16,7 @@ type Login struct {
 var users = map[string]Login{}
 func main() {
 	http.HandleFunc("/register", register)
-	//http.HandleFunc("/login", login)
+	http.HandleFunc("/login", login)
 	//http.HandleFunc("/logout", logout)
 	//http.HandleFunc("/protected", Protected)
 	http.ListenAndServe(":8080", nil)
@@ -69,12 +70,42 @@ func login(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	users, ok := users[username]
-	if !ok || !checkPasswordHash(password, users.Hash) {
+	user, ok := users[username]
+	if !ok || !checkPasswordHash(password, user.Hash) {
 		er := http.StatusUnauthorized
 		http.Error(w, "invalid credentials", er)
 		return
 	}
+
+
+	sessionToken, err := generateToken(32)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+	csrfToken, err := generateToken(32)
+	if err != nil {
+		http.Error(w, "internal server error", http.StatusInternalServerError)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name: "session_token",
+		Value: sessionToken,
+		Expires: time.Now().Add(24 * time.Hour),
+		HttpOnly: true,
+	})
+
+	http.SetCookie(w, &http.Cookie{
+		Name: "csrf_token",
+		Value: csrfToken,
+		Expires: time.Now().Add(24 * time.Hour),
+		HttpOnly: false,
+	})
+
+	user.SessionToken = sessionToken
+	user.CSRFToken = csrfToken
+	users[username] = user
 
 	fmt.Printf("Login successful for user: %s\n", username)
 	

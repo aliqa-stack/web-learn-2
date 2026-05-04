@@ -19,7 +19,7 @@ func checkPasswordHash(password, hash string) bool {
 
 func generateToken(length int) (string, error) {
 	bytes := make([]byte,length)
-	if_, er := rand.Read(bytes); err != nil {
+	if _, er := rand.Read(bytes); er != nil {
 		log.Fatalf("failed to generate token: %v", er)
 	}
 	return base64.StdEncoding.EncodeToString(bytes), nil
