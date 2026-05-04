@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import {Link} from 'react-router-dom'
 
 const LoginSection = () => {
+  
 
+    // place holder for now
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const Users = [];
@@ -17,6 +19,8 @@ const LoginSection = () => {
 
 
     }
+
+    // soon replace with backend
 
     const handleSubmit = (e) => {
         e.preventDefault();

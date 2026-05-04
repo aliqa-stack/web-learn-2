@@ -13,7 +13,7 @@ const Information = () => {
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam auctor, nisl eget ultricies tincidunt, nunc nisl aliquam nisl, eget ultricies nunc nisl eget nunc.
             </p>
         </div>
-
+        {/* soon replace */}
         <div className='flex mt-4 px-5 flex-col gap-3 sm:ml-12'>
             <p className='text-white font-pixelify font-light '>I Carry, We Win</p>
             <p className='text-white font-pixelify font-light '>God Mode: ON</p>
