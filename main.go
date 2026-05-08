@@ -111,3 +111,50 @@ func login(w http.ResponseWriter, r *http.Request) {
 	
 }
 
+func Protected(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		er := http.StatusMethodNotAllowed
+		http.Error(w, "invalid method", er)
+		return
+	}
+
+	if err := Authorize(r); err != nil {
+		er := http.StatusUnauthorized
+		http.Error(w, "unauthorized", er)
+		return
+	}
+
+	username := r.FormValue("username")
+	fmt.Fprintf(w, "Welcome to the protected area, %s!", username)
+}
+
+func logout(w http.ResponseWriter, r *http.Request) { 
+	if err:= Authorize(r); err != nil {
+		er := http.StatusUnauthorized
+		http.Error(w, "unauthorized", er)
+		return
+	}
+
+	http.SetCookie(w, &http.Cookie{
+		Name: "session_token",
+		Value: "",
+		Expires: time.Now().Add(-time.Hour),
+		HttpOnly: true,
+	})
+	http.SetCookie(w, &http.Cookie{
+		Name: "csrf_token",
+		Value: "",
+		Expires: time.Now().Add(-time.Hour),
+		HttpOnly: false,
+	})
+
+	username := r.FormValue("username")
+	user, _ := users[username]
+	user.SessionToken = ""
+	user.CSRFToken = ""
+	users[username] = user
+
+
+
+}
+
