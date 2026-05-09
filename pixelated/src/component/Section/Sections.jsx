@@ -2,12 +2,6 @@ import React from 'react'
 
 const Sections = () => {
   return (
-
-
-
-
-
-
     <div className='  bg-[#F0F9FF] pt-2'>
         <div className='mx-4'>
             <div className='text-center py-4 bg-'>

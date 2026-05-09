@@ -2,19 +2,54 @@ package main
 
 import (
 	"log"
+	"os"
 	"net/http"
 	"fmt"
 	"time"
+	"go.mongodb.org/mongo-driver/v2/mongo"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
+	"github.com/joho/godotenv"
 )
 
 type Login struct {
-	Hash     string
-	SessionToken string
-    CSRFToken string
+	ID 		 int     	`bson: "_id,omtempty"`
+	Username string  	`bson:"username"`
+	Hash     string  	`bson:"hash"`
+	SessionToken string	`bson:"session_token"`
+    CSRFToken string	`bson:"csrf_token"`
 }
 
+var collection *mongo.Collection
 var users = map[string]Login{}
 func main() {
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	mongoURI := os.Getenv("MONGODB_URI")
+	client, err := mongo.Connect(option.Client().ApplyURI(mongoURI))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer func() {
+		if err := client.Disconnect(ctx); err != nil {
+			panic(err)
+		}
+	}
+
+
+	_ = client.Ping(ctx, readpref.Primary())
+
+	fmt.Println("connected to db")
+
+	collecltions = client.Database("login site").Collection("users")
+
 	http.HandleFunc("/register", register)
 	http.HandleFunc("/login", login)
 	//http.HandleFunc("/logout", logout)
@@ -34,17 +69,37 @@ func register(w http.ResponseWriter, r *http.Request) {
 		return 
 	}
 
-	username := r.FormValue("username")
-	password := r.FormValue("password")
+	var creds struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	err := json.NewDecoder(r.Body).Decode(&creds)
+	if err != nil {
+		http.Error(w, "cannot find body", err)
+		return
+	}
+
+	ctx, cancel := contect.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var existingUsers User
+	err := collection.FindOne(ctx, bson.M{"Username": creds.Username}).Decode(&existingUser)
+	if err != nil {
+		http.Error(w, "invalid username or password", err)
+		return
+	}
+
 	if len(username) <8 || len(password) < 8 {
 		er := http.StatusNotAcceptable
 		http.Error(w, "username and password must be at least 8 characters long", er)
 		return
 }
 
-
-	if _ , ok := users[username]; ok {
-		er := http.StatusConflict
+    var sameUser User
+	 err := collection.FindOne(ctx, bson.M{"Username": creds.Username}).Decode(&sameUser)
+	 if err == nil  {
+	
 		http.Error(w, "username already exists", er)
 		return
 

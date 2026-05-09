@@ -3,6 +3,7 @@ import Login from '../Login.jsx/LoginSection'
 import { Link } from 'react-router-dom'
 const Information = () => {
   return (
+    
     <div className='bg-[#0F172A] py-6 mt-4'>
         <div className='text-center bg-[#14B8A6] mx-auto w-11/12 sm:w-1/2 py-4 rounded-md'>
             <h1 className='font-pixelify text-white'>Lorem ipsum dolor sit amet.</h1>
