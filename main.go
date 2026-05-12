@@ -1,15 +1,19 @@
 package main
 
 import (
-	"log"
-	"os"
-	"net/http"
-	"fmt"
-	"time"
-	"go.mongodb.org/mongo-driver/v2/mongo"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"github.com/joho/godotenv"
+    "context"
+    "encoding/json"
+    "fmt"
+    "log"
+    "net/http"
+    "os"
+    "time"
+
+    "github.com/joho/godotenv"
+    "go.mongodb.org/mongo-driver/v2/bson"
+    "go.mongodb.org/mongo-driver/v2/mongo"
+    "go.mongodb.org/mongo-driver/v2/mongo/options"
+    "go.mongodb.org/mongo-driver/v2/mongo/readpref"
 )
 
 type Login struct {
@@ -41,20 +45,20 @@ func main() {
 		if err := client.Disconnect(ctx); err != nil {
 			panic(err)
 		}
-	}
+	} ()
 
 
 	_ = client.Ping(ctx, readpref.Primary())
 
 	fmt.Println("connected to db")
 
-	collecltions = client.Database("login site").Collection("users")
+	collection = client.Database("login site").Collection("users")
 
 	http.HandleFunc("/register", register)
 	http.HandleFunc("/login", login)
 	//http.HandleFunc("/logout", logout)
 	//http.HandleFunc("/protected", Protected)
-	http.ListenAndServe(":8080", nil)
+
 	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
@@ -74,8 +78,7 @@ func register(w http.ResponseWriter, r *http.Request) {
 		Password string `json:"password"`
 	}
 
-	err := json.NewDecoder(r.Body).Decode(&creds)
-	if err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
 		http.Error(w, "cannot find body", err)
 		return
 	}
@@ -83,21 +86,19 @@ func register(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := contect.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var existingUsers User
-	err := collection.FindOne(ctx, bson.M{"Username": creds.Username}).Decode(&existingUser)
-	if err != nil {
-		http.Error(w, "invalid username or password", err)
-		return
-	}
 
-	if len(username) <8 || len(password) < 8 {
+
+	if len(creds.username) <8 || len(creds.password) < 8 {
 		er := http.StatusNotAcceptable
 		http.Error(w, "username and password must be at least 8 characters long", er)
 		return
 }
 
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel ()
+
     var sameUser User
-	 err := collection.FindOne(ctx, bson.M{"Username": creds.Username}).Decode(&sameUser)
+	 err := collection.FindOne(ctx, bson.M{"username": creds.Username}).Decode(&sameUser)
 	 if err == nil  {
 	
 		http.Error(w, "username already exists", er)
@@ -110,9 +111,20 @@ func register(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "internal server error", http.StatusInternalServerError)
 		return
 	}
-	users[username] = Login {
-		Hash: hashPassword,
+
+	newUser := Login {
+		Username : creds.Username,
+		hash : hashPassword,
 	}
+
+	_, err := collection.Inserone(ctx, newUser)
+	if err != nil {
+		http.Error(w, "failed to create user", err)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	fmt.Fprintln(w, "user registered successfully")
+
 }
 
 func login(w http.ResponseWriter, r *http.Request) {
@@ -122,13 +134,25 @@ func login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	username := r.FormValue("username")
-	password := r.FormValue("password")
+	var creds struct {
+		Username string `json: "username"`
+		Password string `json: "password"`
+	
+	}
 
-	user, ok := users[username]
-	if !ok || !checkPasswordHash(password, user.Hash) {
-		er := http.StatusUnauthorized
-		http.Error(w, "invalid credentials", er)
+	if err := json.NewDecoder(r.Body).Decode(&creds); err != nil {
+		http.Error(w, "cannot parse body", err)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var user Login
+
+	err := collection.FindOne(ctx, bson.M{"username": creds.Username}).Decode(user)
+	if err != || !checkPasswordHash(creds.Password, Hash.User) {
+		http.Error(w, "wrong password", err)
 		return
 	}
 
