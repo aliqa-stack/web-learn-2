@@ -1,38 +1,74 @@
 import React, { useState } from 'react';
-import {Link} from 'react-router-dom'
+import { useEffect } from 'react';
+import {Link, useNavigate} from 'react-router-dom'
 
 const LoginSection = () => {
   
 
     // place holder for now
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const Users = [];
+    const [error, setError] = useState('');
+    const navigate = useNavigate();
+   
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        if (name === 'email') {
-            setEmail(value);
-        } else if (name === 'password') {
-            setPassword(value);
-        }
+    const handleUsernameChange =  (e) => {
+        setUsername(e.target.value);
+
+  
 
 
     }
 
+    const handlePasswordChange = (e) => {
+        setPassword(e.target.value);
+    }
+
+
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        try{
+            const res = await fetch("http://localhost:8080/register", {
+                method: "POST",
+                headers: {
+                     "Content-Type": "application/json",
+                },
+                body:JSON.stringify({username, password})
+            })
+
+            if (!res.ok){
+                throw new Error("cannot register");
+            }
+
+
+        } catch(error) {
+            setError(error.message);
+            console.error(error);
+        }
+    }
+
     // soon replace with backend
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        setError('');
 
-        if (!email.trim() || !password.trim()) {
-            alert('Please fill in all fields');
-            return;
+        try{
+            const res = await fetch("http://localhost:8080/login", {
+                method: "POST",
+                headers: {
+                     "Content-Type": "application/json",
+                },
+                body : JSON.stringify({username, password}),
+                credentials : "include"
+            })
+
+        } catch(error){
+            setError(error.message);
+            console.error(error);
         }
-        console.log('Email:', email);
-        console.log('Password:', password);
-        Users.push(email, password)
-        console.log(Users);
+
+ 
     }
 
   return (
@@ -47,14 +83,17 @@ const LoginSection = () => {
               <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                   Sign in to your account
               </h1>
-              <form class="space-y-4 md:space-y-6" action="#" onSubmit={handleSubmit}>
+              {error && (
+                <p>{error} </p>
+              )}
+              <form className="space-y-4 md:space-y-6"  onSubmit={handleRegister}>
                   <div>
-                      <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                      <input type="email" name="email" value={email} onChange={handleChange} id="email" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required=""/>
+                      <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your username</label>
+                      <input type="text" name="username" value={username} onChange={handleUsernameChange} id="email" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="name@company.com" required=""/>
                   </div>
                   <div>
                       <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                      <input type="password" name="password" value={password} onChange={handleChange} id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required=""/>
+                      <input type="password" name="password" value={password} onChange={handlePasswordChange} id="password" placeholder="••••••••" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required=""/>
                   </div>
                   <div class="flex items-center justify-between">
                       <div class="flex items-start">
@@ -67,10 +106,17 @@ const LoginSection = () => {
                       </div>
                       <a href="#" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
                   </div>
-                  <button type="submit"  class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"><Link to="/">sign in</Link></button>
+                  <button type="submit"  class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">sign in</button>
                   <p class="text-sm font-light text-gray-500 dark:text-gray-400">
                       Don’t have an account yet? <a href="#" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign up</a>
                   </p>
+                         <button
+                                    type="button"
+                                    onClick={handleSubmit}
+                                    className="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                                >
+                                    Sign up
+                                </button>
               </form>
           </div>
       </div>

@@ -3,6 +3,9 @@ package main
 import (
 	"errors"
 	"net/http"
+		"context"
+	"time"
+	"go.mongodb.org/mongo-driver/v2/bson"
 )
 
 // Authorize checks if the request has valid session and CSRF tokens
@@ -10,10 +13,16 @@ import (
 
 var AuthError = errors.New("Unauthorized")
 
-func Authorize(r *http.Request) Error {
+func Authorize(r *http.Request) error {
 	username := r.FormValue("username")
-	user, ok := users[username]
-	if !ok {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+
+	var user Login 
+	err := collection.FindOne(ctx, bson.M{"username": username}).Decode(&user)
+	if err != nil {
 		return AuthError
 	}
 
